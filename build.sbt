@@ -27,3 +27,5 @@ libraryDependencies ++= Seq(
 
 // add to show implicit conversions
 //set scalacOptions in Compile += "-Xlog-implicits"
+
+scalacOptions in Compile ++= Seq("-feature","-language:implicitConversions")

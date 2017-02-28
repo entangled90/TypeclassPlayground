@@ -1,7 +1,7 @@
 package com.example.localization
 
 import cats.data.NonEmptyList
-import shapeless.Lazy
+import com.example.localization.domain.building.{BuildingParts, Facility}
 
 /**
   * Created by carlo on 28/02/17.
@@ -11,26 +11,6 @@ case class Location(name: String)
 trait Localizable[T] {
   def locationTree(t: T): NonEmptyList[Location]
 }
-
-sealed trait BuildingPart{
-  type Parent
-  def name: String
-  def parent: Parent
-}
-case class Building(name: String, parent: Facility)
-    extends BuildingPart{
-  type Parent = Facility
-}
-case class Floor(name: String, parent: Building)
-    extends BuildingPart{
-  override type Parent = Building
-}
-case class Room(name: String, parent: Floor)
-    extends BuildingPart{
-  override type Parent = Floor
-}
-case class Facility(city: String)
-
 object Implicits {
 
   implicit object facilityLocalizable extends Localizable[Facility] {
@@ -39,7 +19,7 @@ object Implicits {
   }
 
   // Not an implicit conversion!
-  implicit def buildingPartLocalizable[_, T <: BuildingPart](implicit localizableParent : Localizable[T#Parent])
+  implicit def buildingPartLocalizable[_, T <: BuildingParts](implicit localizableParent : Localizable[T#Parent])
     : Localizable[T] = { (t: T) => {
       val parentTree =
         localizableParent.locationTree(t.parent).toList
