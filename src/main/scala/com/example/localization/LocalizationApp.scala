@@ -15,11 +15,7 @@ object LocalizationApp extends App{
   val room1 = Room("Room 1", floor)
   val room2 = Room("Room 2", floor)
 
-
-  val localizableRoom= buildingLocalizable[Building,Floor]
-
-  println(localizableRoom.tree)
-//  println(floor.tree)
-//  println(room1.tree)
-//  println(room2.tree)
+  println(floor.tree)
+  println(room1.tree)
+  println(room2.tree)
 }

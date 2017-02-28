@@ -12,32 +12,37 @@ trait Localizable[T] {
   def locationTree(t: T): NonEmptyList[Location]
 }
 
-sealed trait PartOfBuilding[Parent] {
+sealed trait BuildingPart{
+  type Parent
   def name: String
   def parent: Parent
 }
 case class Building(name: String, parent: Facility)
-    extends PartOfBuilding[Facility]
+    extends BuildingPart{
+  type Parent = Facility
+}
 case class Floor(name: String, parent: Building)
-    extends PartOfBuilding[Building]
+    extends BuildingPart{
+  override type Parent = Building
+}
 case class Room(name: String, parent: Floor)
-    extends PartOfBuilding[Floor]
-
+    extends BuildingPart{
+  override type Parent = Floor
+}
 case class Facility(city: String)
 
 object Implicits {
-
-  import shapeless.Lazy._
 
   implicit object facilityLocalizable extends Localizable[Facility] {
     override def locationTree(t: Facility) =
       NonEmptyList(Location(t.city), Nil)
   }
 
-  implicit def buildingLocalizable[P, T <: PartOfBuilding[P]](implicit localizableParent : Lazy[Localizable[P]])
+  // Not an implicit conversion!
+  implicit def buildingPartLocalizable[_, T <: BuildingPart](implicit localizableParent : Localizable[T#Parent])
     : Localizable[T] = { (t: T) => {
       val parentTree =
-        localizableParent.value.locationTree(t.parent).toList
+        localizableParent.locationTree(t.parent).toList
       NonEmptyList(Location(t.name), parentTree)
     }
   }
@@ -48,10 +53,10 @@ object Implicits {
     def tree: NonEmptyList[Location] = typeclass.locationTree(value)
   }
 
-  implicit def localizableOps[T](t: T)(implicit localizable: Lazy[Localizable[T]]): LocalizableOps[T] = {
+  implicit def localizableOps[T](t: T)(implicit localizable: Localizable[T]): LocalizableOps[T] = {
     new LocalizableOps[T] {
       val value: T = t
-      override val typeclass: Localizable[T] = localizable.value
+      override val typeclass: Localizable[T] = localizable
     }
   }
 

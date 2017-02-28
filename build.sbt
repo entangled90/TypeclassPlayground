@@ -23,3 +23,7 @@ libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 libraryDependencies ++= Seq(
   "com.chuusai" %% "shapeless" % "2.3.2"
 )
+
+
+// add to show implicit conversions
+//set scalacOptions in Compile += "-Xlog-implicits"
