@@ -8,7 +8,7 @@ import com.example.localization.Loc
   */
 package object details {
 
-  implicit def buildingPartLocalizable[_, T <: PreciseLocation](
+  implicit def preciseLocalizable[_, T <: PreciseLocation](
       implicit localizableParent: Loc[T#Parent]): Loc[T] = {
     (t: T) =>
       {
